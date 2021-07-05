@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CF38EC8726933B90009448FA /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF38EC8626933B90009448FA /* Extensions.swift */; };
 		CF655C45269311A200EB2045 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF655C44269311A200EB2045 /* AppDelegate.swift */; };
 		CF655C47269311A200EB2045 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF655C46269311A200EB2045 /* SceneDelegate.swift */; };
 		CF655C49269311A200EB2045 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF655C48269311A200EB2045 /* ViewController.swift */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CF38EC8626933B90009448FA /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		CF655C41269311A200EB2045 /* ShortestRouteApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShortestRouteApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF655C44269311A200EB2045 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CF655C46269311A200EB2045 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -39,6 +41,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CF38EC8526933B67009448FA /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				CF38EC8626933B90009448FA /* Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		CF655C38269311A200EB2045 = {
 			isa = PBXGroup;
 			children = (
@@ -58,6 +68,7 @@
 		CF655C43269311A200EB2045 /* ShortestRouteApp */ = {
 			isa = PBXGroup;
 			children = (
+				CF38EC8526933B67009448FA /* Extensions */,
 				CF655C5E26932A2C00EB2045 /* Alert */,
 				CF655C5C2693127B00EB2045 /* ViewControllers */,
 				CF655C5B2693126C00EB2045 /* Resources */,
@@ -180,6 +191,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF38EC8726933B90009448FA /* Extensions.swift in Sources */,
 				CF655C49269311A200EB2045 /* ViewController.swift in Sources */,
 				CF655C45269311A200EB2045 /* AppDelegate.swift in Sources */,
 				CF655C6026932A3A00EB2045 /* Alert.swift in Sources */,

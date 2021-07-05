@@ -39,6 +39,8 @@ class ViewController: UIViewController {
         button.isHidden = true
         return button
     }()
+    
+    var annotationsArray = [MKPointAnnotation]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,58 +50,92 @@ class ViewController: UIViewController {
         addAdressButton.addTarget(self, action: #selector(addAdressButtonTapped), for: .touchUpInside)
         routeButton.addTarget(self, action: #selector(routeButtonTapped), for: .touchUpInside)
         resetButton.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
+        
+        mapView.delegate = self
     }
     
     @objc func addAdressButtonTapped() {
-        alertAddAdress(title: "Добавить", placeholder: "Введите адрес") { (text) in
-            print(text)
+        alertAddAdress(title: "Добавить", placeholder: "Введите адрес") { [self] (text) in
+            setupPlacemark(adressPlace: text)
         }
     }
     
     @objc func routeButtonTapped() {
-        print("TapRoute")
+        
+        for index in 0...annotationsArray.count - 2 {
+            createDirectionRequest(startCoordinate: annotationsArray[index].coordinate, destinationCoordinate: annotationsArray[index + 1].coordinate)
+        }
+        mapView.showAnnotations(annotationsArray, animated: true)
     }
     
     @objc func resetButtonTapped() {
-        print("TapReset")
+        mapView.removeOverlays(mapView.overlays)
+        mapView.removeAnnotations(mapView.annotations)
+        annotationsArray = [MKPointAnnotation]()
+        routeButton.isHidden = true
+        resetButton.isHidden = true
+    }
+    
+    private func setupPlacemark(adressPlace: String) {
+        let geocoder = CLGeocoder()
+        geocoder.geocodeAddressString("Москва, Рождественская 21") { [self] (placemarks, error) in
+            if let error = error {
+                print(error)
+                alertError(title: "Ошибка", message: "Сервер недоступен. Попробуйте добавить адрес ещё раз")
+                return
+            }
+            
+            guard let placemarks = placemarks else { return }
+            let placemark = placemarks.first
+            
+            let annotation = MKPointAnnotation()
+            annotation.title = "\(adressPlace)"
+            guard let placemarkLocation = placemark?.location else { return }
+            annotation.coordinate = placemarkLocation.coordinate
+            
+            annotationsArray.append(annotation)
+            
+            if annotationsArray.count > 2 {
+                routeButton.isHidden = false
+                resetButton.isHidden = false
+            }
+            
+            mapView.showAnnotations(annotationsArray, animated: true)
+        }
+    }
+    
+    private func createDirectionRequest(startCoordinate: CLLocationCoordinate2D, destinationCoordinate: CLLocationCoordinate2D) {
+        
+        let startLocation = MKPlacemark(coordinate: startCoordinate)
+        let destinationLocation = MKPlacemark(coordinate: destinationCoordinate)
+        
+        let request = MKDirections.Request()
+        request.source = MKMapItem(placemark: startLocation)
+        request.destination = MKMapItem(placemark: destinationLocation)
+        request.transportType = .walking
+        request.requestsAlternateRoutes = true
+        
+        let direction = MKDirections(request: request)
+        direction.calculate { (response, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            guard let response = response else {
+            self.alertError(title: "Ошибка", message: "Маршрут недоступен")
+                return
+            }
+            
+            var minRoute = response.routes[0]
+            for route in response.routes {
+                minRoute = (route.distance < minRoute.distance) ? route : minRoute
+            }
+            
+            self.mapView.addOverlay(minRoute.polyline)
+        }
     }
 }
 
-extension ViewController {
-    
-    func setConstraints() {
-        
-        view.addSubview(mapView)
-        NSLayoutConstraint.activate([
-            mapView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
-            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
-            mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
-        ])
-        
-        mapView.addSubview(addAdressButton)
-        NSLayoutConstraint.activate([
-            addAdressButton.topAnchor.constraint(equalTo: mapView.topAnchor, constant: 50),
-            addAdressButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -20),
-            addAdressButton.heightAnchor.constraint(equalToConstant: 70),
-            addAdressButton.widthAnchor.constraint(equalToConstant: 70)
-        ])
-        
-        mapView.addSubview(routeButton)
-        NSLayoutConstraint.activate([
-            routeButton.leadingAnchor.constraint(equalTo: mapView.leadingAnchor, constant: 20),
-            routeButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -30),
-            routeButton.heightAnchor.constraint(equalToConstant: 70),
-            routeButton.widthAnchor.constraint(equalToConstant: 70)
-        ])
-        
-        mapView.addSubview(resetButton)
-        NSLayoutConstraint.activate([
-            resetButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -20),
-            resetButton.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -30),
-            resetButton.heightAnchor.constraint(equalToConstant: 70),
-            resetButton.widthAnchor.constraint(equalToConstant: 70)
-        ])
-    }
-}
+
 
